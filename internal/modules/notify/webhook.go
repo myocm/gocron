@@ -57,7 +57,7 @@ func (webHook *WebHook) send(msg Message, url string) {
 		i += 1
 		time.Sleep(2 * time.Second)
 		if i < maxTimes {
-			logger.Errorf("webHook#发送消息失败#%s#消息内容-%s", resp.Body, msg["content"])
+			logger.Errorf("webHook#发送消息失败#%s#消息内容-%s", resp.Body, string(data))
 		}
 	}
 }
