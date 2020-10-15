@@ -32,12 +32,25 @@ func (webHook *WebHook) Send(msg Message) {
 }
 
 func (webHook *WebHook) send(msg Message, url string) {
-	content := msg["content"].(string)
+	//content := msg["content"].(string)
+	content, err := json.Marshal(msg)
+        if err != nil {
+                logger.Debugf("json.Marshal failed:", err)
+                return
+        }
+
+        body := map[string]interface{}{"msgtype": "text","text": string(content)}
+        data, err := json.Marshal(body)
+        if err != nil {
+                logger.Debugf("json.Marshal data failed:", err)
+                return
+        }
 	timeout := 30
 	maxTimes := 3
 	i := 0
 	for i < maxTimes {
-		resp := httpclient.PostJson(url, content, timeout)
+		resp := httpclient.PostJson(url, string(data), timeout)
+		logger.Debugf("webHook#发送消息#%s#消息内容-%s ### StatusCode: %d", resp.Body, string(data), resp.StatusCode)
 		if resp.StatusCode == 200 {
 			break
 		}
